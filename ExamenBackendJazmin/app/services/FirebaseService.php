@@ -11,18 +11,24 @@ class FirebaseService
 
     public function __construct()
     {
-        $credentialsPath = base_path(env('FIREBASE_CREDENTIALS'));
+        // Opción 1: Usar archivo si existe
+        $credentialsPath = base_path('firebase_credentials.json');
         
-        // Configuramos Auth y Database al mismo tiempo
+        // Opción 2: Usar variable de entorno (para Railway)
+        if (!file_exists($credentialsPath) && env('FIREBASE_CREDENTIALS_JSON')) {
+            // Crear archivo temporal desde variable de entorno
+            $credentialsPath = sys_get_temp_dir() . '/firebase_credentials.json';
+            file_put_contents($credentialsPath, env('FIREBASE_CREDENTIALS_JSON'));
+        }
+
         $factory = (new Factory)
             ->withServiceAccount($credentialsPath)
-            ->withDatabaseUri(env('FIREBASE_DATABASE_URL')); // <--- Importante
+            ->withDatabaseUri(env('FIREBASE_DATABASE_URL'));
 
         $this->auth = $factory->createAuth();
         $this->database = $factory->createDatabase();
     }
 
-    // Método para verificar token (ya lo tenías)
     public function verifyToken(string $token)
     {
         try {
@@ -32,11 +38,9 @@ class FirebaseService
         }
     }
 
-    // NUEVO: Método para guardar una venta
     public function guardarVenta(array $datosVenta)
     {
-        // Esto creará una entrada en la colección 'ventas' con un ID único
         $nuevaVenta = $this->database->getReference('ventas')->push($datosVenta);
-        return $nuevaVenta->getKey(); // Retorna el ID generado
+        return $nuevaVenta->getKey();
     }
 }
