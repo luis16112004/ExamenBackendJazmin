@@ -12,10 +12,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // Agrega esta línea:
-        $middleware->alias([
-            'firebase' => FirebaseTokenMiddleware::class,
-        ]);
+        // Elimina todo esto, no lo necesitas por ahora
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
