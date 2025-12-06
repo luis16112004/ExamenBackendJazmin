@@ -3,10 +3,10 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ProviderController;
 
-// Ruta pública para probar rápido (luego le pones el middleware 'firebase')
-Route::post('/crear-venta', [ProviderController::class, 'store']);
-Route::middleware(['firebase'])->group(function () {
-    Route::get('/ventas', function () {
-        return response()->json(['mensaje' => 'Si ves esto, tu token de Android es válido']);
-    });
-}); 
+// Ruta para registrar ventas
+Route::post('/ventas', [ProviderController::class, 'store']);
+
+// Si después necesitas proteger con middleware:
+// Route::middleware('firebase.token')->group(function () {
+//     Route::post('/ventas', [ProviderController::class, 'store']);
+// });
